@@ -1,8 +1,13 @@
-#map {
-    height: 100%;
-    width: 100%;
-}
 * {
     margin: 0;
     padding: 0;
+}
+
+#map {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    display: block !important;
 }
