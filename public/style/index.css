@@ -10,4 +10,17 @@
     width: 100%;
     position: fixed;
     display: block !important;
+    z-index: 5;
+}
+
+.select-icon:hover {
+    color: #000;
+    background-color: #0dcaf0;
+    border-color: #0dcaf0
+}
+
+.cursor {
+    position: fixed;
+    visibility: hidden;
+    z-index: -1;
 }
