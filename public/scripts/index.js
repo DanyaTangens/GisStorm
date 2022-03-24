@@ -10,13 +10,13 @@ document.addEventListener("DOMContentLoaded", () => {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
+    L.marker([56.8383, 60.6031]).addTo(map)
+        .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+        .openPopup();
+
     map.on('click', onMapClick);
 });
-// let objectType = document.getElementById('cursor');
-// document.onmousemove = function(event){
-//     objectType.style.left = event.clientX+'px';
-//     objectType.style.top = event.clientY+'px';
-// }
+
 
 function setTool(id) {
     switch (id){

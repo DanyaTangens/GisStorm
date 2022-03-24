@@ -1,9 +1,20 @@
-{
+{   "name": "danyatangens/gisstorm",
+    "description": "Gis system for provider",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Daniil Iluykhin",
+            "email": "danyatangens@yandex.ru"
+        }
+    ],
+    "minimum-stability": "stable",
     "require": {
         "slim/slim": "4.*",
         "twig/twig": "3.*",
         "slim/psr7": "^1.5",
-        "ext-pdo": "^8.0"
+        "ext-pdo": "^8.0",
+        "php-di/php-di": "6.*",
+        "devcoder-xyz/php-dotenv": "^1.0"
     },
     "autoload": {
         "psr-4": {

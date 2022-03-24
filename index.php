@@ -4,44 +4,30 @@ use App\Operations\AddCoupling;
 use App\Operations\DeleteCoupling;
 use App\Operations\EditCoupling;
 use App\Operations\GetCoupling;
+use App\Operations\MapPage;
+use DevCoder\DotEnv;
+use DI\ContainerBuilder;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
-use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
 use App\Operations\GetCouplings;
 
 require __DIR__ . '/vendor/autoload.php';
 
-$loader = new FilesystemLoader('public/templates');
-$view = new Environment($loader);
+$builder = new ContainerBuilder();
+$builder->addDefinitions('config/Container.php');
+(new DotEnv(__DIR__ . '\.env'))->load();
 
-$config = include 'config/database.php';
-$dsn = $config['dsn'];
-$username = $config['username'];
-$password = $config['password'];
-try {
-    $connection = new PDO($dsn, $username, $password);
-    $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-} catch (PDOException $exception) {
-//    echo 'Database error: ' . $exception->getMessage();
-//    die();
-}
+$container = $builder->build();
+
+AppFactory::setContainer($container);
 
 $app = AppFactory::create();
-
 $app->addErrorMiddleware(true, false, false);
 $app->addBodyParsingMiddleware();
 
-//ROUTES
-$app->get('/', function (Request $request, Response $response, array $args) use ($view) {
-    $body = $view->render('index.twig');
-    $response->getBody()->write($body);
-
-    return $response;
-});
+$app->get('/', MapPage::class);
 $app->group('/api', function (RouteCollectorProxy $app) {
     $app->group('/v1', function (RouteCollectorProxy $group) {
         $group->group('/couplings', function (RouteCollectorProxy $api) {
