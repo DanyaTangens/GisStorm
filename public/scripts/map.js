@@ -10,7 +10,7 @@ function getIcon(number) {
 }
 
 function onMapClick(e) {
-    if (current_tool === 1) {
+    if (current_tool === 2) {
         marker = new L.Marker([e.latlng.lat, e.latlng.lng], {icon: getIcon(1)}).addTo(map); //было map
         current_coupling = marker;
         document.getElementById('coupling_nomination').value = '';
@@ -66,10 +66,10 @@ function updateDataCoupling() {
         couple_settings_change = 0;
     }
 
-    obj.name = $('#coupling_nomination').val();
-    obj.type = $('#coupling_type').val();
-    obj.comment = $('#coupling_sl_txt').val();
-    obj.link = $('#coupling_folder').val();
+    obj.name = document.getElementById('coupling_nomination').value.trim();
+    obj.type = document.getElementById('coupling_type').value.trim();
+    obj.comment = document.getElementById('coupling_sl_txt').value.trim();
+    obj.link = document.getElementById('coupling_folder').value.trim();
 
     saveDataCoupling(obj);
 }
