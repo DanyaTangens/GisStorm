@@ -1,6 +1,6 @@
 let map;
 
-let couple_settings_change = 1;
+let couple_settings_change = 0;
 let couple_settings_id = null;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -24,6 +24,7 @@ function setTool(id) {
             break;
         case 2:
             current_tool = 2;
+            couple_settings_change = 0;
             break;
         default:
             current_tool = 0;

@@ -7,17 +7,17 @@ use App\Operations\GetCoupling;
 use App\Operations\MapPage;
 use DevCoder\DotEnv;
 use DI\ContainerBuilder;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
 use App\Operations\GetCouplings;
 
 require __DIR__ . '/vendor/autoload.php';
 
+//phpinfo();
+
 $builder = new ContainerBuilder();
 $builder->addDefinitions('config/Container.php');
-(new DotEnv(__DIR__ . '\.env'))->load();
+(new DotEnv(__DIR__ . '/.env'))->load();
 
 $container = $builder->build();
 
@@ -38,26 +38,6 @@ $app->group('/api', function (RouteCollectorProxy $app) {
             $api->delete('/:id', DeleteCoupling::class);
         });
     });
-});
-
-$app->post('/test', function (Request $request, Response $response, array $args) {
-    $data = $request->getParsedBody();
-    $body = $response->getBody();
-    $body->write(json_encode($data, JSON_THROW_ON_ERROR));
-
-    return $response
-        ->withHeader('content-type', 'application/json')
-        ->withBody($body);
-});
-
-$app->get('/test', function (Request $request, Response $response, array $args) {
-    $data = ['name' => 'maks'];
-    $body = $response->getBody();
-    $body->write(json_encode($data, JSON_THROW_ON_ERROR));
-
-    return $response
-        ->withHeader('content-type', 'application/json')
-        ->withBody($body);
 });
 
 $app->run();

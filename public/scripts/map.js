@@ -1,3 +1,5 @@
+let current_coupling = null;
+
 function getIcon(number) {
     if (number === 1) {
         return L.icon({
@@ -11,7 +13,7 @@ function getIcon(number) {
 
 function onMapClick(e) {
     if (current_tool === 2) {
-        marker = new L.Marker([e.latlng.lat, e.latlng.lng], {icon: getIcon(1)}).addTo(map); //было map
+        marker = new L.Marker([e.latlng.lat, e.latlng.lng], {icon: getIcon(1)}).addTo(map);
         current_coupling = marker;
         document.getElementById('coupling_nomination').value = '';
         document.getElementById('coupling_type').value = '';
@@ -48,7 +50,7 @@ function getCoupling() {
 }
 
 function updateDataCoupling() {
-    let obj = {'id': 0, 'action': '', 'name': '', 'type': 0, 'lat': 0, 'lon': 0, 'obj': 2};
+    let obj = {'id': 0, 'action': '', 'name': '', 'type': 0, 'lat': 0, 'lng': 0, 'obj': 2};
 
     if (document.getElementById('coupling_nomination').value.trim() === '') {
         alert('Название не может быть пустым');
@@ -59,7 +61,7 @@ function updateDataCoupling() {
         obj.action = 'POST';
         obj.id = 0;
         obj.lat = current_coupling._latlng.lat;
-        obj.lon = current_coupling._latlng.lng;
+        obj.lng = current_coupling._latlng.lng;
     } else {
         obj.action = 'PUT';
         obj.id = couple_settings_id;
@@ -92,7 +94,6 @@ async function saveDataCoupling(obj) {
     });
 
     let data = await response.json(); // читаем ответ в формате JSON
-
     alert(data);
 }
 
