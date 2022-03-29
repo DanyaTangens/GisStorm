@@ -22,7 +22,7 @@ class GetCouplings
 
     private function transform(Response $response): Response
     {
-        $data = $this->repository->getById(2);
+        $data = $this->repository->getById(1);
 
         $response->getBody()->write(json_encode($data));
 

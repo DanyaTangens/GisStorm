@@ -13,12 +13,11 @@ use App\Operations\GetCouplings;
 
 require __DIR__ . '/vendor/autoload.php';
 
-//phpinfo();
-
 $builder = new ContainerBuilder();
 $builder->addDefinitions('config/Container.php');
 (new DotEnv(__DIR__ . '/.env'))->load();
 
+//phpinfo();
 $container = $builder->build();
 
 AppFactory::setContainer($container);

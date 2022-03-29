@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Database;
 use App\Twig\AssetExtension;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use function DI\autowire;
@@ -20,6 +22,19 @@ return [
 
     Database::class => autowire()
         ->constructorParameter('connection', get(PDO::class)),
+
+    Connection::class => function () {
+        $params = [
+            'driver' => 'pdo_mysql',
+            'dbname' => getenv('DB_NAME'),
+            'user' => getenv('DB_USER'),
+            'password' => getenv('DB_PASSWORD'),
+            'host' => getenv('DB_HOST'),
+            'port' => getenv('DB_PORT'),
+        ];
+
+        return DriverManager::getConnection($params);
+    },
 
     PDO::class => autowire()
         ->constructor(

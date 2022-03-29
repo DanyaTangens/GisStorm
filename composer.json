@@ -13,10 +13,11 @@
         "slim/slim": "4.*",
         "twig/twig": "3.*",
         "slim/psr7": "^1.5",
-        "ext-pdo": "^7.0",
+        "ext-pdo": "^8",
         "php-di/php-di": "6.*",
         "devcoder-xyz/php-dotenv": "^1.0",
-        "ext-json": "*"
+        "ext-json": "*",
+        "doctrine/dbal": "^3.3"
     }
     ,
     "require-dev": {
