@@ -27,25 +27,37 @@ function onMapClick(e) {
     }
 }
 
-function getCoupling() {
-    fetch('./test',
-        {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                title: 'Beispielprojekt',
-                url: 'http://www.example.com',
+async function get_coupling() {
+    // if (!zoom_load_data) {
+    //     return;
+    // }
+    let bounds = map.getBounds();
+    let southWest = bounds.getSouthWest();
+    let northEast = bounds.getNorthEast();
+
+    let params = {
+        sw_lat: southWest.lat,
+        sw_lng: southWest.lng,
+        ne_lat: northEast.lat,
+        ne_lng: northEast.lng
+    }
+    let url = './api/v1/couplings?' + new URLSearchParams(params).toString();
+    console.log(url);
+    fetch(url)
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data);
+            L.geoJSON(data, {
+                pointToLayer: pointToLayer,
+                onEachFeature: onEachFeature,
+                // filter: function(feature, layer){
+                //     return couple_list.indexOf(parseInt(feature.properties.id)) == -1;
+                // }
             })
-        })
-        .then(function (response) {
-            var text = response.json();
-            console.log(text.title);
-        })
-        .catch(function (error) {
-            console.error(error);
+                // .on('click', markerOnClick)
+                .addTo(map)
         });
 }
 
