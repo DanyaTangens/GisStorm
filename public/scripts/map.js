@@ -42,22 +42,27 @@ async function get_coupling() {
         ne_lng: northEast.lng
     }
     let url = './api/v1/couplings?' + new URLSearchParams(params).toString();
-    console.log(url);
+
     fetch(url)
         .then((response) => {
             return response.json();
         })
         .then((data) => {
-            console.log(data);
-            L.geoJSON(data, {
-                pointToLayer: pointToLayer,
-                onEachFeature: onEachFeature,
-                // filter: function(feature, layer){
-                //     return couple_list.indexOf(parseInt(feature.properties.id)) == -1;
-                // }
-            })
-                // .on('click', markerOnClick)
-                .addTo(map)
+            if (data.error !== null){
+                alert(data.error)
+            }
+            else
+            {
+                L.geoJSON(data.result, {
+                    pointToLayer: pointToLayer,
+                    onEachFeature: onEachFeature,
+                    // filter: function(feature, layer){
+                    //     return couple_list.indexOf(parseInt(feature.properties.id)) == -1;
+                    // }
+                })
+                    // .on('click', markerOnClick)
+                    .addTo(map)
+            }
         });
 }
 

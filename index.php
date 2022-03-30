@@ -23,7 +23,10 @@ $container = $builder->build();
 AppFactory::setContainer($container);
 
 $app = AppFactory::create();
+
+// Add Error Middleware
 $app->addErrorMiddleware(true, false, false);
+
 $app->addBodyParsingMiddleware();
 
 $app->get('/', MapPage::class);

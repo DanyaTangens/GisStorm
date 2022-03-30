@@ -11,6 +11,7 @@ class GetCouplings
 {
     private CouplingRepository $repository;
     private array $params;
+
     public function __construct(CouplingRepository $repository)
     {
         $this->repository = $repository;
@@ -24,6 +25,11 @@ class GetCouplings
 
     private function prepareGeoJson(Response $response): Response
     {
+        $data = [
+            'error' => null,
+            'result' => null
+        ];
+
         $geoJson = [
             'type' => 'FeatureCollection',
             'features' => []
@@ -36,30 +42,35 @@ class GetCouplings
             (float)$this->params['ne_lng']
         );
 
-        $rows = $this->repository->getByBounds($bounds);
+        try {
+            $rows = $this->repository->getByBounds($bounds);
 
-        foreach($rows as $row) {
-            $marker = [
-                'type' => 'Feature',
-                'geometry' => [
-                    'type' => 'Point',
-                    'coordinates' => [
-                        $row->getLng(),
-                        $row->getLat()
+            foreach ($rows as $row) {
+                $marker = [
+                    'type' => 'Feature',
+                    'geometry' => [
+                        'type' => 'Point',
+                        'coordinates' => [
+                            $row->getLng(),
+                            $row->getLat()
+                        ]
+                    ],
+                    'properties' => [
+                        'id' => $row->getId(),
+                        'name' => $row->getName(),
+                        'type_coupling' => $row->getTypeCoupling(),
+                        'description' => $row->getDescription()
                     ]
-                ],
-                'properties' => [
-                    'id' => $row->getId(),
-                    'name' => $row->getName(),
-                    'type_coupling' => $row->getTypeCoupling(),
-                    'description' => $row->getDescription()
-                ]
-            ];
+                ];
 
-            array_push($geoJson['features'], $marker);
+                $geoJson['features'][] = $marker;
+                $data['result'] = $geoJson;
+            }
+        } catch (\Throwable $e) {
+            $data['error'] = $e->getMessage();
         }
 
-        $response->getBody()->write(json_encode($geoJson));
+        $response->getBody()->write(json_encode($data));
 
         return $response;
     }

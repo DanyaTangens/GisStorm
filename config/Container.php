@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Database;
 use App\Twig\AssetExtension;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -20,9 +19,6 @@ return [
         ->constructorParameter('loader', get(FilesystemLoader::class))
         ->method('addExtension', get(AssetExtension::class)),
 
-    Database::class => autowire()
-        ->constructorParameter('connection', get(PDO::class)),
-
     Connection::class => function () {
         $params = [
             'driver' => 'pdo_mysql',
@@ -35,16 +31,6 @@ return [
 
         return DriverManager::getConnection($params);
     },
-
-    PDO::class => autowire()
-        ->constructor(
-            getenv('DATABASE_DSN'),
-            getenv('DATABASE_USERNAME'),
-            getenv('DATABASE_PASSWORD'),
-            []
-        )
-        ->method('setAttribute', PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION)
-        ->method('setAttribute', PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC),
 
     AssetExtension::class => autowire()
         ->constructorParameter('serverParams', get('server.params')),

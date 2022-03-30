@@ -56,7 +56,7 @@ SELECT
     X(point) as x,
     Y(point) as y
 FROM
-     coupling
+    coupling
 WHERE
     MBRContains(GeomFromText('Polygon(({$bounds->getMapBounds()}))'), point)
 SQL;
@@ -83,7 +83,7 @@ SET
     description = :description,
     point = GeomFromText('POINT(:lat :lng)', 0)
 SQL;
-        $this->database->getConnection()->prepare($sql, [
+        $this->connection->fetchAllAssociative($sql, [
             'name' => $couplingAdd->getName(),
             'type_coupling' => $couplingAdd->getTypeCoupling(),
             'description' => $couplingAdd->getDescription(),
