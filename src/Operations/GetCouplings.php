@@ -9,22 +9,22 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class GetCouplings
 {
+    use InjectJsonInResponseTrait;
+
     private CouplingRepository $repository;
-    private array $params;
 
     public function __construct(CouplingRepository $repository)
     {
         $this->repository = $repository;
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function __invoke(Request $request, Response $response): Response
     {
-        $this->params = $request->getQueryParams();
-        return $this->prepareGeoJson($response);
-    }
+        $params = $request->getQueryParams();
 
-    private function prepareGeoJson(Response $response): Response
-    {
         $data = [
             'error' => null,
             'result' => null
@@ -36,10 +36,10 @@ class GetCouplings
         ];
 
         $bounds = new Bounds(
-            (float)$this->params['sw_lat'],
-            (float)$this->params['sw_lng'],
-            (float)$this->params['ne_lat'],
-            (float)$this->params['ne_lng']
+            (float)$params['sw_lat'],
+            (float)$params['sw_lng'],
+            (float)$params['ne_lat'],
+            (float)$params['ne_lng']
         );
 
         try {
@@ -58,6 +58,7 @@ class GetCouplings
                     'properties' => [
                         'id' => $row->getId(),
                         'name' => $row->getName(),
+                        'obj' => 2,
                         'type_coupling' => $row->getTypeCoupling(),
                         'description' => $row->getDescription()
                     ]
@@ -70,8 +71,6 @@ class GetCouplings
             $data['error'] = $e->getMessage();
         }
 
-        $response->getBody()->write(json_encode($data));
-
-        return $response;
+        return $this->injectJson($response, $data);
     }
 }

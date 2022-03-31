@@ -2,6 +2,7 @@ let map;
 
 let couple_settings_change = 0;
 let couple_settings_id = null;
+let current_tool = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
     map = L.map('map').setView([56.8383, 60.6031], 13);
@@ -11,6 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }).addTo(map);
 
     map.on('click', onMapClick);
+
+    get_coupling()
 });
 
 
@@ -33,42 +36,40 @@ function setTool(id) {
 }
 
 //функция, которая вызывается при отрисовке
-function pointToLayer(feature, latlng) {
-    return L.marker(latlng, {icon: leafletIcon(feature)});
+function pointToLayer(feature, latLng) {
+    return L.marker(latLng, {icon: leafletIcon(feature)});
 }
 
 function leafletIcon(feature) {
-    if (feature.properties.obj == 3) {
-        return L.icon({
-            iconUrl: 'images/coupling.png',
-            iconAnchor: [15, 30],
-            popupAnchor: [0, 0],
-            tooltipAnchor: [0, 0]
-        });
-    }
+    return L.icon({
+        iconUrl: '/public/images/icon/Coupling.png',
+        iconAnchor: [15, 15],
+        popupAnchor: [0, 0],
+        tooltipAnchor: [0, 0]
+    });
 }
 
 function onEachFeature(feature, layer) {
 
-    var node_type = '';
+    let node_type = '';
     if (feature.properties.type_coupling === 0) {
         node_type = "Прямая муфта";
     } else if (feature.properties.type_coupling === 1) {
         node_type = "Разветвительная муфта";
     }
 
-    // couple_list.push(parseInt(feature.properties.id));
+    couple_list.push(parseInt(feature.properties.id));
 
-    id = feature.properties.id; //айдишник
-    name = feature.properties.name; // наименование копируемого
-    type_coupling = feature.properties.type_coupling; //тип копируемого
-    description = feature.properties.description; // описание
-    lonLS = feature.geometry.coordinates[0]; // какая-то координата
-    latLS = feature.geometry.coordinates[1]; // какая-то координа, но вторая
+    let id = feature.properties.id; //айдишник
+    let name = feature.properties.name; // наименование копируемого
+    let type_coupling = feature.properties.type_coupling; //тип копируемого
+    let description = feature.properties.description; // описание
+    let lonLS = feature.geometry.coordinates[0]; // какая-то координата
+    let latLS = feature.geometry.coordinates[1]; // какая-то координа, но вторая
 
     layer.options.draggable = true;
     layer.on('dragend', function (event) {
-        // saveNewData(event);
+        saveNewData(event);
     });
     layer.bindPopup(
         `<b>Информация о муфте:</b><br>
@@ -77,10 +78,22 @@ function onEachFeature(feature, layer) {
             Тип: ${node_type}<br>
             Доп. инфо: ${description == null ? 'нет' : description}<br> 
             Текущие координаты: ${latLS + ',' + lonLS}<br>
-            <input type=submit id=couple_settings onclick='couple_settings(${lsID});' value='Изменить параметры'>&nbsp;
-            <input type=submit id=couple_delete onclick='couple_delete(${lsID});' value='Удалить'>&nbsp;<br>
-            <input type=submit id=couple_files onclick='couple_files(${lsID}, ${feature.properties.sline_id});' value='Управление файлами'>&nbsp;
-            <input type=submit id=couple_copy onclick='couple_copy(\"${lsName}\",\"${lsNomination}\",${lsType},\"${lsComment}\",${latLS},${lonLS});' value='Копировать'><br>
+            <input type=submit id=couple_settings onclick='couple_settings(${id});' value='Изменить параметры'>&nbsp;
+            <input type=submit id=couple_delete onclick='couple_delete(${id});' value='Удалить'>&nbsp;<br>
             `
     );
+}
+
+function saveNewData(e) {
+    console.log(e)
+    if (e.target.feature.properties.obj === 2) {
+        let obj = { 'id': 0, 'action': 'put', 'slid': 0, 'type': 0, 'lat': 0, 'lng': 0, 'obj': 2 };
+        obj.id = parseInt(e.target.feature.properties.id);
+        obj.type =e.target.feature.properties.type;
+        obj.obj = e.target.feature.properties.obj;
+        obj.lat = e.target._latlng.lat;
+        obj.lng = e.target._latlng.lng;
+
+        saveDataCoupling(obj);
+    }
 }

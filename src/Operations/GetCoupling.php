@@ -8,6 +8,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class GetCoupling
 {
+    use InjectJsonInResponseTrait;
+
     private CouplingRepository $repository;
 
     public function __construct(CouplingRepository $repository)
@@ -15,17 +17,23 @@ class GetCoupling
         $this->repository = $repository;
     }
 
-    public function __invoke(Request $request, Response $response): Response
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     * @throws \JsonException
+     */
+    public function __invoke(Request $request, Response $response, array $args): Response
     {
-        return $this->transform($response);
-    }
+        $coupling = $this->repository->getById($args['id']);
+        $data = [
+            'id' => $coupling->getId(),
+            'name' => $coupling->getName(),
+            'obj' => 2,
+            'type_coupling' => $coupling->getTypeCoupling(),
+            'description' => $coupling->getDescription(),
+            'lat' => $coupling->getLat(),
+            'lng' => $coupling->getLng(),
+        ];
 
-    private function transform(Response $response): Response
-    {
-        $data = $this->repository->getById(2);
-
-        $response->getBody()->write(json_encode($data));
-
-        return $response;
+        return $this->injectJson($response, $data);
     }
 }

@@ -2,23 +2,25 @@
 
 namespace App\Operations;
 
+use App\Repository\CouplingRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class DeleteCoupling
 {
-    public function __invoke(Request $request, Response $response): Response
+    use InjectJsonInResponseTrait;
+
+    private CouplingRepository $repository;
+
+    public function __construct(CouplingRepository $repository)
     {
-        return $this->transform($response);
+        $this->repository = $repository;
     }
 
-    private function transform(Response $response): Response
+    public function __invoke(Request $request, Response $response, array $args): Response
     {
-        $userList = [
-            'username' => 'Maks'
-        ];
-        $response->getBody()->write(json_encode($userList));
+       $this->repository->deleteById($args['id']);
 
-        return $response;
+       return $this->injectJson($response, []);
     }
 }

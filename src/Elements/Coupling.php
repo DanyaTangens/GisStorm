@@ -4,14 +4,14 @@ namespace App\Elements;
 
 class Coupling
 {
-    private int $id;
-    private string $name;
-    private int $typeCoupling;
-    private string $description;
-    private float $lat;
-    private float $lng;
+    private ?int $id;
+    private ?string $name;
+    private ?int $typeCoupling;
+    private ?string $description;
+    private ?float $lat;
+    private ?float $lng;
 
-    public function __construct(int $id, string $name, int $typeCoupling, string $description, float $lat, float $lng)
+    public function __construct(?int $id, ?string $name, ?int $typeCoupling, ?string $description, ?float $lat, ?float $lng)
     {
         $this->id = $id;
         $this->name = $name;

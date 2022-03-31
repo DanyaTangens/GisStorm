@@ -34,10 +34,10 @@ $app->group('/api', function (RouteCollectorProxy $app) {
     $app->group('/v1', function (RouteCollectorProxy $group) {
         $group->group('/couplings', function (RouteCollectorProxy $api) {
             $api->get('', GetCouplings::class);
-            $api->get('/:id', GetCoupling::class);
+            $api->get('/{id}', GetCoupling::class);
             $api->post('', AddCoupling::class);
             $api->put('', EditCoupling::class);
-            $api->delete('/:id', DeleteCoupling::class);
+            $api->delete('/{id}', DeleteCoupling::class);
         });
     });
 });
