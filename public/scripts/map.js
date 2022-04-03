@@ -1,7 +1,7 @@
-let current_coupling = null
-let couple_list = []
-let current_coupling_feature = null;
-
+let currentCoupling = null
+let coupleList = []
+let currentCouplingFeature = null;
+var test
 function getIcon(number) {
     if (number === 2) {
         return L.icon({
@@ -15,24 +15,23 @@ function getIcon(number) {
 
 function onMapClick(e) {
     let marker
-    if (current_tool === 0) {
+    if (currentTool === 0) {
         console.log("You clicked the map at " + e.latlng)
-    } else if (current_tool === 2) {
-        marker = new L.Marker([e.latlng.lat, e.latlng.lng], {icon: getIcon(current_tool)}).addTo(map)
-        current_coupling = marker
+    } else if (currentTool === 2) {
+        marker = new L.Marker([e.latlng.lat, e.latlng.lng], {icon: getIcon(currentTool)}).addTo(map)
+        currentCoupling = marker
         document.getElementById('coupling_nomination').value = '';
         document.getElementById('coupling_type').value = '';
         document.getElementById('coupling_sl_txt').value = '';
-        document.getElementById('coupling_folder').value = '';
 
         document.getElementById('properties1').click();
     }
 }
 
-async function get_coupling() {
-    // if (!zoom_load_data) {
-    //     return;
-    // }
+async function getCoupling() {
+    if (!isZoom) {
+        return;
+    }
     let bounds = map.getBounds();
     let southWest = bounds.getSouthWest();
     let northEast = bounds.getNorthEast();
@@ -52,10 +51,13 @@ async function get_coupling() {
             } else {
                 L.geoJSON(data.result, {
                     pointToLayer: pointToLayer, onEachFeature: onEachFeature, filter: function (feature, layer) {
-                        return couple_list.indexOf(parseInt(feature.properties.id)) === -1;
+                        return coupleList.indexOf(parseInt(feature.properties.id)) === -1;
                     }
                 })
                     .on('click', markerOnClick)
+                    .on('mousedown', function (feature) {
+                        currentCouplingFeature = feature
+                    })
                     .addTo(map)
             }
         });
@@ -69,26 +71,28 @@ function updateDataCoupling() {
         return;
     }
 
-    if (couple_settings_change === 0) { // insert
-        obj.action = 'POST';
-        obj.id = 0;
-        obj.lat = current_coupling._latlng.lat;
-        obj.lng = current_coupling._latlng.lng;
+    if (coupleSettingsChange === 0) {
+        obj.action = 'POST'
+        obj.id = 0
+        obj.lat = currentCoupling._latlng.lat
+        obj.lng = currentCoupling._latlng.lng
     } else {
-        obj.action = 'PUT';
-        obj.id = couple_settings_id;
-        couple_settings_change = 0;
+        obj.action = 'PUT'
+        obj.id = coupleSettingsId
+        coupleSettingsChange = 0
+        obj.lat = currentCouplingFeature.latlng.lat
+        obj.lng = currentCouplingFeature.latlng.lng
     }
 
-    obj.name = document.getElementById('coupling_nomination').value.trim();
-    obj.type = document.getElementById('coupling_type').value.trim();
-    obj.comment = document.getElementById('coupling_sl_txt').value.trim();
+    obj.name = document.getElementById('coupling_nomination').value.trim()
+    obj.type = document.getElementById('coupling_type').value.trim()
+    obj.comment = document.getElementById('coupling_sl_txt').value.trim()
 
-    saveDataCoupling(obj);
+    saveDataCoupling(obj)
 }
 
 async function saveDataCoupling(obj) {
-    let response = await fetch('./api/v1/couplings', {
+    let response = await fetch(`./api/v1/couplings`, {
         method: obj.action, headers: {
             'Accept': 'application/json', 'Content-Type': 'application/json'
         }, body: JSON.stringify({
@@ -96,19 +100,21 @@ async function saveDataCoupling(obj) {
         })
     });
 
-    let data = await response.json(); // читаем ответ в формате JSON
+    let data = await response.json();
     if (data.result !== null) {
         document.getElementById('osx_couple_close_btn').click()
-        current_tool = 0
-        alert(data.result)
+        currentTool = 0
+        if (obj.action === 'PUT') {
+            updatePopupMarker(data)
+        }
     }
 }
 
-function couple_delete(id) {
+function coupleDelete(id) {
     if (!confirm('Вы уверены что хотите удалить муфту?')) {
         return;
     }
-    let response = fetch('./api/v1/couplings/' + id, {
+    fetch('./api/v1/couplings/' + id, {
         method: 'DELETE', headers: {
             'Accept': 'application/json', 'Content-Type': 'application/json'
         }
@@ -117,7 +123,7 @@ function couple_delete(id) {
             return response.json();
         })
         .then((data) => {
-            if (data.error === null) {
+            if (typeof data.error !== 'undefined') {
                 alert(data.error)
             } else {
                 map.eachLayer(function (layer) {
@@ -134,21 +140,67 @@ function couple_delete(id) {
         });
 }
 
-function couple_settings(id) {
-    couple_settings_change = 1;
-    couple_settings_id = id;
+function coupleMoveUpdate(obj) {
+    fetch(`./api/v1/couplings/${obj.id}/move`, {
+        method: 'PUT', headers: {
+            'Accept': 'application/json', 'Content-Type': 'application/json'
+        }, body: JSON.stringify({
+            id: obj.id, lat: obj.lat, lng: obj.lng,
+        })
+    })
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
+            if (typeof data.error !== 'undefined') {
+                alert(data.error)
+            } else {
+                updatePopupMarker(data)
+            }
+        })
+        .catch(function (reason) {
+            console.log(reason);
+        });
+}
+
+/**
+ * Установка глобальных значений для редактирования муфты
+ * @param id
+ */
+function coupleSettings(id) {
+    coupleSettingsChange = 1;
+    coupleSettingsId = id;
     document.getElementById('properties1').click();
 }
 
+/**
+ * При клике на существующий объект, подготавливаем форму в соответствии с его данными,
+ * чтобы в случае чего обновить информацию
+ * @param feature
+ */
 function markerOnClick(feature)
 {
-    console.log(feature);
     obj = feature.layer.feature.properties.obj;
-    console.log(obj)
     if(obj === 2){
        document.getElementById('coupling_nomination').value = feature.layer.feature.properties.name;
         document.getElementById('coupling_type').value = feature.layer.feature.properties.type_coupling;
         document.getElementById('coupling_sl_txt').value = feature.layer.feature.properties.description;
-        current_coupling_feature = feature;
+        currentCouplingFeature = feature;
+    }
+}
+
+function updatePopupMarker(data) {
+    if (data.result.obj === 2) {
+        currentCouplingFeature.layer.bindPopup(
+            `<b>Информация о муфте:</b><br>
+            ID: ${data.result.id}<br>
+            Наименование муфты: ${data.result.name == null ? 'нет' : data.result.name}<br> 
+            Тип: ${data.result.type_coupling === 0 ? "Прямая муфта" : "Разветвительная муфта"}<br>
+            Доп. инфо: ${data.result.description == null ? 'нет' : data.result.description}<br> 
+            Текущие координаты: ${data.result.lat + ',' + data.result.lng}<br>
+            <input type=submit id=couple_settings onclick='coupleSettings(${data.result.id});' value='Изменить параметры'>&nbsp;
+            <input type=submit id=couple_delete onclick='coupleDelete(${data.result.id});' value='Удалить'>&nbsp;<br>
+            `
+        );
     }
 }

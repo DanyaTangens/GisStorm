@@ -42,7 +42,6 @@ class GetCouplings
             (float)$params['ne_lng']
         );
 
-        try {
             $rows = $this->repository->getByBounds($bounds);
 
             foreach ($rows as $row) {
@@ -67,9 +66,7 @@ class GetCouplings
                 $geoJson['features'][] = $marker;
                 $data['result'] = $geoJson;
             }
-        } catch (\Throwable $e) {
-            $data['error'] = $e->getMessage();
-        }
+
 
         return $this->injectJson($response, $data);
     }

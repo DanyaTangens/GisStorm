@@ -1,9 +1,30 @@
 version: '3.7'
 
 services:
-  slim:
-    image: php:7.4-alpine
-    command:
-      - php -S 0.0.0.0:8888
+  nginx:
+    image: nginx:latest
     ports:
-      - 8888:8888
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./hosts:/etc/nginx/conf.d
+      - ./www:/var/www
+      - ./logs/nginx:/var/log/nginx
+    links:
+      - php
+  php:
+    image: php:8.1.4-alpine
+    links:
+      - mysql
+    command: php -S 0.0.0.0:8080 -t /var/www
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/var/www
+  mysql:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: sait

@@ -129,12 +129,32 @@ SQL;
 UPDATE 
 	coupling 
 SET
+    name = :name,
+    type_coupling = :type_coupling,
+    description = :description
+WHERE 
+    id = :id
+SQL;
+        $this->connection->executeQuery($sql, [
+            'id' => $coupling->getId(),
+            'name' => $coupling->getName(),
+            'type_coupling' => $coupling->getTypeCoupling(),
+            'description' => $coupling->getDescription(),
+        ]);
+    }
+
+    public function editCouplingMove(Coupling $coupling)
+    {
+        $sql = <<<SQL
+UPDATE 
+	coupling 
+SET
     point = GeomFromText('POINT({$coupling->getLat()} {$coupling->getLng()})', 0)
 WHERE 
     id = :id
 SQL;
         $this->connection->executeQuery($sql, [
-            'id' => $coupling->getId()
+            'id' => $coupling->getId(),
         ]);
     }
 }

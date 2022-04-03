@@ -7,7 +7,7 @@ use App\Repository\CouplingRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class EditCoupling
+class EditMoveCoupling
 {
     use InjectJsonInResponseTrait;
 
@@ -18,20 +18,20 @@ class EditCoupling
         $this->repository = $repository;
     }
 
-    public function __invoke(Request $request, Response $response): Response
+    public function __invoke(Request $request, Response $response, array $args): Response
     {
         $body = $request->getParsedBody();
         $coupling  = new Coupling(
-            $body['id'],
-            $body['name'],
-            $body['type_coupling'],
-            $body['description'],
+            $args['id'],
+            null,
+            null,
+           null,
             $body['lat'],
             $body['lng'],
         );
-        $this->repository->editCoupling($coupling);
+        $this->repository->editCouplingMove($coupling);
 
-        $coupling = $this->repository->getById($body['id']);
+        $coupling = $this->repository->getById($args['id']);
         $data = [
             'result' => [
                 'id' => $coupling->getId(),
