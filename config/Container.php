@@ -5,12 +5,17 @@ declare(strict_types=1);
 use App\Twig\AssetExtension;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Slim\Psr7\Factory\ResponseFactory;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use function DI\autowire;
 use function DI\get;
 
 return [
+    ResponseFactoryInterface::class => function () {
+        return new ResponseFactory();
+    },
     'server.params' => $_SERVER,
     FilesystemLoader::class => autowire()
         ->constructorParameter('paths', 'public/templates'),

@@ -1,5 +1,6 @@
 <?php
 
+use App\Handler\DefaultErrorHandler;
 use App\Operations\AddCoupling;
 use App\Operations\DeleteCoupling;
 use App\Operations\EditCoupling;
@@ -26,26 +27,8 @@ AppFactory::setContainer($container);
 
 $app = AppFactory::create();
 
-// TODO: Пока использую обработчик ошибок из документации
-$customErrorHandler = function (
-    ServerRequestInterface $request,
-    Throwable $exception,
-    bool $displayErrorDetails,
-    bool $logErrors,
-    bool $logErrorDetails
-) use ($app) {
-    $payload = ['error' => $exception->getMessage()];
-
-    $response = $app->getResponseFactory()->createResponse();
-    $response->getBody()->write(
-        json_encode($payload, JSON_UNESCAPED_UNICODE)
-    );
-
-    return $response;
-};
-
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
-$errorMiddleware->setDefaultErrorHandler($customErrorHandler);
+$errorMiddleware->setDefaultErrorHandler(DefaultErrorHandler::class);
 
 $app->addBodyParsingMiddleware();
 
