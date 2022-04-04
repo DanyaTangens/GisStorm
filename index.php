@@ -1,6 +1,7 @@
 <?php
 
 use App\Handler\DefaultErrorHandler;
+use App\Middleware\AuthMiddleware;
 use App\Operations\AddCoupling;
 use App\Operations\DeleteCoupling;
 use App\Operations\EditCoupling;
@@ -9,6 +10,7 @@ use App\Operations\GetCoupling;
 use App\Operations\MapPage;
 use DevCoder\DotEnv;
 use DI\ContainerBuilder;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
@@ -33,6 +35,13 @@ $errorMiddleware->setDefaultErrorHandler(DefaultErrorHandler::class);
 $app->addBodyParsingMiddleware();
 
 $app->get('/', MapPage::class);
+$app->get('/test', MapPage::class)->add(AuthMiddleware::class);
+
+$app->get('/login', function (ServerRequestInterface $request, ResponseInterface $response, $args) {
+    $response->getBody()->write("Hello world!");
+    return $response;
+});
+
 $app->group('/api', function (RouteCollectorProxy $app) {
     $app->group('/v1', function (RouteCollectorProxy $group) {
         $group->group('/couplings', function (RouteCollectorProxy $api) {
