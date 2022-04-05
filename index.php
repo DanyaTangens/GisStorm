@@ -22,7 +22,9 @@ $builder = new ContainerBuilder();
 $builder->addDefinitions('config/Container.php');
 (new DotEnv(__DIR__ . '/.env'))->load();
 
-//phpinfo();
+session_cache_limiter(false);
+session_start();
+
 $container = $builder->build();
 
 AppFactory::setContainer($container);
