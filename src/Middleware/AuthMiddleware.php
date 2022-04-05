@@ -20,7 +20,7 @@ class AuthMiddleware
 
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
-        if ($this->serverParams['account'] !== null) {
+        if ($this->serverParams['user'] === null) {
             return $this->responseFactory->createResponse()
                 ->withHeader('Location', 'login')
                 ->withStatus(302);
