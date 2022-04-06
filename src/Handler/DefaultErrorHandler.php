@@ -29,7 +29,8 @@ class DefaultErrorHandler
     {
         $payload = [
             'error' => $this->resolve($exception),
-            'error type' => get_class($exception)
+            'error type' => get_class($exception),
+            'stack' => $exception->getTrace()
         ];
 
         $response = $this->responseFactory->createResponse();

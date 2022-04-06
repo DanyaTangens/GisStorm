@@ -17,6 +17,8 @@ class UserLogin
 
     public function __invoke(Request $request, Response $response): Response
     {
+        $_SESSION['user'] = 'danya';
+
         return $response
             ->withHeader('Location', '/')
             ->withStatus(302);

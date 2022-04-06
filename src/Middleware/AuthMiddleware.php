@@ -9,18 +9,16 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
 class AuthMiddleware
 {
-    private array $serverParams;
     private ResponseFactoryInterface $responseFactory;
 
-    public function __construct(ResponseFactoryInterface $responseFactory, array $serverParams)
+    public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
-        $this->serverParams = $serverParams;
     }
 
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
-        if ($this->serverParams['user'] === null) {
+        if (empty($_SESSION['user'])) {
             return $this->responseFactory->createResponse()
                 ->withHeader('Location', 'login')
                 ->withStatus(302);

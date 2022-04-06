@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Middleware\AuthMiddleware;
+use App\Operations\UserLogin;
 use App\Twig\AssetExtension;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -39,7 +40,5 @@ return [
     },
 
     AssetExtension::class => autowire()
-        ->constructorParameter('serverParams', get('server.params')),
-    AuthMiddleware::class => autowire()
         ->constructorParameter('serverParams', get('server.params')),
 ];

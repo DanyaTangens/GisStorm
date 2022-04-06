@@ -13,8 +13,6 @@ use App\Operations\MapPage;
 use App\Operations\UserLogin;
 use DevCoder\DotEnv;
 use DI\ContainerBuilder;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
 use App\Operations\GetCouplings;
@@ -25,7 +23,6 @@ $builder = new ContainerBuilder();
 $builder->addDefinitions('config/Container.php');
 (new DotEnv(__DIR__ . '/.env'))->load();
 
-session_cache_limiter(false);
 session_start();
 
 $container = $builder->build();
@@ -39,12 +36,11 @@ $errorMiddleware->setDefaultErrorHandler(DefaultErrorHandler::class);
 
 $app->addBodyParsingMiddleware();
 
-$app->get('/', MapPage::class);
-$app->get('/test', MapPage::class)->add(AuthMiddleware::class);
+$app->get('/', MapPage::class)->add(AuthMiddleware::class);
 
 $app->get('/login', LoginPage::class);
 $app->post('/login', UserLogin::class)->add(LoginValidateMiddleware::class);
-$app->get('/logout', function ($request, $response, $args) {
+$app->get('/logout', function ($request, $response) {
     unset($_SESSION['user']);
     session_regenerate_id();
 
