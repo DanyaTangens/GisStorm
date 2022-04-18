@@ -2,7 +2,7 @@
 
 namespace App\Handler;
 
-use Doctrine\DBAL\ConnectionException;
+use Doctrine\DBAL\Exception\ConnectionException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -29,7 +29,8 @@ class DefaultErrorHandler
     {
         $payload = [
             'error' => $this->resolve($exception),
-            'error type' => get_class($exception)
+            'error_type' => get_class($exception),
+            'test' => (array)$request
         ];
 
         $response = $this->responseFactory->createResponse();

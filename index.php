@@ -2,6 +2,7 @@
 
 use App\Handler\DefaultErrorHandler;
 use App\Middleware\AuthMiddleware;
+use App\Middleware\LoginMiddleware;
 use App\Middleware\LoginValidateMiddleware;
 use App\Operations\AddCoupling;
 use App\Operations\DeleteCoupling;
@@ -38,7 +39,7 @@ $app->addBodyParsingMiddleware();
 
 $app->get('/', MapPage::class)->add(AuthMiddleware::class);
 
-$app->get('/login', LoginPage::class)->add(\App\Middleware\LoginMiddleware::class);
+$app->get('/login', LoginPage::class)->add(LoginMiddleware::class);
 $app->post('/login', UserLogin::class)->add(LoginValidateMiddleware::class);
 $app->get('/logout', function ($request, $response) {
     unset($_SESSION['user']);

@@ -55,14 +55,13 @@
 
 </head>
 <body class="text-center">
-{% for error in errors %}
-    <li>{{ error }}</li>
-{% endfor %}
 <main class="form-signin">
+    <img class="mb-4" src="https://getbootstrap.com/docs/5.1/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+    <h1 class="h3 mb-3 fw-normal">Пожалуйста, авторизуйтесь</h1>
+    {% for error in errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
     <form method="post">
-        <img class="mb-4" src="https://getbootstrap.com/docs/5.1/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
-        <h1 class="h3 mb-3 fw-normal">Пожалуйста, авторизуйтесь</h1>
-
         <div class="form-floating">
             <input type="email" class="form-control" id="floatingInput" name="login" placeholder="name@example.com">
             <label for="floatingInput">Логин</label>

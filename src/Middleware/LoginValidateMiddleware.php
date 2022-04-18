@@ -23,10 +23,10 @@ class LoginValidateMiddleware
     {
         $error = [];
         $params = $request->getParsedBody();
-        if(trim($params['login']) == '') {
+        if(trim($params['login']) === '') {
             $error[] = 'Введите логин';
         }
-        if($params['password'] == '') {
+        if($params['password'] === '') {
             $error[] = 'Введите пароль';
         }
         if (!empty($error)) {
