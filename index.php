@@ -38,7 +38,7 @@ $app->addBodyParsingMiddleware();
 
 $app->get('/', MapPage::class)->add(AuthMiddleware::class);
 
-$app->get('/login', LoginPage::class);
+$app->get('/login', LoginPage::class)->add(\App\Middleware\LoginMiddleware::class);
 $app->post('/login', UserLogin::class)->add(LoginValidateMiddleware::class);
 $app->get('/logout', function ($request, $response) {
     unset($_SESSION['user']);
